@@ -44,21 +44,21 @@ strerror_r(err, current_exception.msg, EXCEPTION_MSG_LEN)
  * @param format message Format, uses the same notation as printf
  * @param ... Parameters that were specified in format string
  */
-#define EXCEPTION_THROW(err, format, ...)                                       \
-EXCEPTION_THROW_NOMSG(err);                                                     \
-{                                                                               \
-    char* ptr = current_exception.msg;                                          \
-    size_t len = EXCEPTION_MSG_LEN;                                             \
-    size_t size = strlen(ptr);                                                  \
-    if(size > 0)                                                                \
-    {                                                                           \
-        ptr += size;                                                            \
-        len -= size;                                                            \
-        size = snprintf(ptr, len, " : ");                                       \
-        ptr += size;                                                            \
-        len -= size;                                                            \
-    }                                                                           \
-    snprintf(ptr, len, (format), __VA_ARGS__);                                  \
+#define EXCEPTION_THROW(err, format, ...)                                                           \
+EXCEPTION_THROW_NOMSG(err);                                                                         \
+{                                                                                                   \
+    char* __exception_msg_ptr = current_exception.msg;                                              \
+    size_t __exception_msg_len_left = EXCEPTION_MSG_LEN;                                            \
+    size_t __exception_msg_len_used = strlen(__exception_msg_ptr);                                  \
+    if(__exception_msg_len_used > 0)                                                                \
+    {                                                                                               \
+        __exception_msg_ptr += __exception_msg_len_used;                                            \
+        __exception_msg_len_left -= __exception_msg_len_used;                                       \
+        __exception_msg_len_used = snprintf(__exception_msg_ptr, __exception_msg_len_left, " : ");  \
+        __exception_msg_ptr += __exception_msg_len_used;                                            \
+        __exception_msg_len_left -= __exception_msg_len_used;                                       \
+    }                                                                                               \
+    snprintf(__exception_msg_ptr, __exception_msg_len_left, (format), __VA_ARGS__);                 \
 }((void)(0))
 
 /*!
